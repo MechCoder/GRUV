@@ -14,7 +14,7 @@ def convert_mp3_to_wav(filename, sample_frequency):
 	new_path = ''
 	if(filename[0] == '/'):
 		new_path = '/'
-	for i in xrange(len(files)-1):
+	for i in range(len(files)-1):
 		new_path += files[i]+'/'
 	tmp_path = new_path + 'tmp'
 	new_path += 'wave'
@@ -41,7 +41,7 @@ def convert_flac_to_wav(filename, sample_frequency):
 	new_path = ''
 	if(filename[0] == '/'):
 		new_path = '/'
-	for i in xrange(len(files)-1):
+	for i in range(len(files)-1):
 		new_path += files[i]+'/'
 	new_path += 'wave'
 	if not os.path.exists(new_path):
@@ -96,7 +96,7 @@ def time_blocks_to_fft_blocks(blocks_time_domain):
 		fft_block = np.fft.fft(block)
 		new_block = np.concatenate((np.real(fft_block), np.imag(fft_block)))
 		fft_blocks.append(new_block)
-	return fft_blocks	
+	return fft_blocks
 
 def fft_blocks_to_time_blocks(blocks_ft_domain):
 	time_blocks = []
@@ -109,17 +109,21 @@ def fft_blocks_to_time_blocks(blocks_ft_domain):
 		time_blocks.append(time_block)
 	return time_blocks
 
-def convert_wav_files_to_nptensor(directory, block_size, max_seq_len, out_file, max_files=20, useTimeDomain=False):
+def convert_wav_files_to_nptensor(
+	directory, block_size, max_seq_len, out_file, max_files=20,
+	useTimeDomain=False):
+
 	files = []
 	for file in os.listdir(directory):
 		if file.endswith('.wav'):
 			files.append(directory+file)
+
 	chunks_X = []
 	chunks_Y = []
 	num_files = len(files)
-	if(num_files > max_files):
-		num_files = max_files
-	for file_idx in xrange(num_files):
+	num_files = max(max_files, num_files)
+
+	for file_idx in range(num_files):
 		file = files[file_idx]
 		print 'Processing: ', (file_idx+1),'/',num_files
 		print 'Filename: ', file
@@ -139,8 +143,8 @@ def convert_wav_files_to_nptensor(directory, block_size, max_seq_len, out_file, 
 	out_shape = (num_examples, max_seq_len, num_dims_out)
 	x_data = np.zeros(out_shape)
 	y_data = np.zeros(out_shape)
-	for n in xrange(num_examples):
-		for i in xrange(max_seq_len):
+	for n in range(num_examples):
+		for i in range(max_seq_len):
 			x_data[n][i] = chunks_X[n][i]
 			y_data[n][i] = chunks_Y[n][i]
 		print 'Saved example ', (n+1), ' / ',num_examples
@@ -163,7 +167,7 @@ def convert_nptensor_to_wav_files(tensor, indices, filename, useTimeDomain=False
 	num_seqs = tensor.shape[1]
 	for i in indices:
 		chunks = []
-		for x in xrange(num_seqs):
+		for x in range(num_seqs):
 			chunks.append(tensor[i][x])
 		save_generated_example(filename+str(i)+'.wav', chunks,useTimeDomain=useTimeDomain)
 
